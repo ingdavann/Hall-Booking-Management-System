@@ -78,26 +78,27 @@ public class Main {
         }while (true);
         return cols;
     }
+
+    // Option Case Method
     public static void menuOption(int rowHall, int colHall){
         String[][] hall1 = new String[rowHall][colHall];
         String[][] hall2 = new String[rowHall][colHall];
         String[][] hall3 = new String[rowHall][colHall];
-
-        boolean  checkOption = false;
+        boolean  checkOption = true;
         Scanner menu = new Scanner(System.in);
+        String pattern = "[1-9]+";
+        String msg = "Sorry! please input positive number only";
         int rows =  0;
         int cols = 0;
+        int optionCase = 0;
         do{
             displayMenu();
-            String regex = "-?[1-9]\\d*|0\n";
             System.out.print("-> Please choose option (1 to 6): ");
             String option = menu.nextLine();
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(option);
-            if(matcher.matches()){
-                int optionCase = Integer.parseInt(option);
-                if(optionCase<=0 || optionCase>6){
-                    System.out.println("You can choose only Sixth...!");
+            if(validateInput(option,pattern,msg)){
+                optionCase = Integer.parseInt(option);
+                if (optionCase > 6){
+                    System.out.println("Sorry! You can choose only Sixth...!");
                     checkOption = true;
                 }
                 else {
@@ -186,8 +187,7 @@ public class Main {
                 }
             }
             else {
-                System.out.println("You can not input text, number only");
-                checkOption = true;
+                System.out.println(msg);
             }
         }while(checkOption);
 
