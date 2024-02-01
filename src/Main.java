@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,57 +21,68 @@ public class Main {
         System.out.println("# C) Night (07:00PM - 09:30PM");
     }
 
-    public static void configHall() {
-        boolean checkConfig = false;
-        do {
-//            int totalSeatInRow = 0;
-            String regex = "-?[1-9]\\d*|0\n";
-            Scanner config = new Scanner(System.in);
+    /* validate method user input*/
+    public static boolean validateInput(String input, String pattern, String msg){
+        Pattern pattern1 = Pattern.compile(pattern);
+        Matcher matcher = pattern1.matcher(input);
+        return  matcher.matches();
+    }
+    /* End validate method user input*/
 
+    /* main method */
+    public static void main(String[] args) {
+        Title.displayTitle();
+        Scanner config = new Scanner(System.in);
+        boolean checkConfig = true;
+        String pattern = "[1-9]+";
+        String msg = "Sorry! please input positive number only";
+        int rows = 0 , cols = 0 ;
+        int checkedRow = checkRows(config, pattern, msg, rows);
+        int checkCol = checkCols(config, pattern, msg, cols);
+        int  total = checkedRow * checkCol;
+        System.out.println("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
+        System.out.println("=> Number of Rows: " + checkedRow + " Rows");
+        System.out.println("=> Number of Seaters per row: " + checkCol + " Seaters");
+        System.out.println("Total Seaters: " + total + " Seaters");
+        System.out.println("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
+        menuOption(checkedRow, checkCol);
+    }
+    /* End main method */
+    private static int checkRows (Scanner config, String pattern, String msg, int rows){
+        do {
             System.out.println("# Setting: Set row and seater per row");
             System.out.print("--> Please set row in hall : ");
             String rowInHall = config.nextLine();
-
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(rowInHall);
-
-
-            if (matcher.matches()) {
-                Integer toRow = Integer.valueOf(rowInHall);
-                if (toRow <= 0) {
-                    System.out.println("Row can not zero or negative...!");
-                    checkConfig = true;
-                }
-                else{
-                    System.out.print("--> Please set number of seaters per row : ");
-                    String totalSeatInRow = config.nextLine();
-                    Integer toSeater = Integer.valueOf(totalSeatInRow);
-                    if(toSeater <= 0){
-                        System.out.println("Seater can not zero or negative...!");
-                        checkConfig = true;
-                    }
-                    else{
-                        System.out.println("======= You have successfully set up the hall =======");
-                        Integer total;
-                        total = toRow * toSeater;
-                        System.out.println("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
-                        System.out.println("=> Number of Rows: " + toRow + " Rows");
-                        System.out.println("=> Number of Seaters per row: " + toSeater + " Seaters");
-                        System.out.println("Total Seaters: " + total + " Seaters");
-                        System.out.println("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
-                        checkConfig = false;
-                    }
-                    String[][] hall1 = new String[toRow][toSeater];
-                    String[][] hall2 = new String[toRow][toSeater];
-                    String[][] hall3 = new  String[toRow][toSeater];
-                }
-            } else {
-                System.out.println("You can not input text, number only");
-                checkConfig = true;
+            if (validateInput(rowInHall, pattern, msg)) {
+                rows = Integer.parseInt(rowInHall);
+                break;
             }
-        } while (checkConfig);
+            else {
+                System.out.println(msg);
+            }
+        } while (true);
+        return rows;
     }
-    public static void menuOption(){
+    private static int checkCols (Scanner config, String pattern, String msg, int cols){
+        do {
+            System.out.print("--> Please set number of seaters per row : ");
+            String totalSeatInRow = config.nextLine();
+            if (validateInput(totalSeatInRow, pattern, msg)) {
+                cols = Integer.parseInt(totalSeatInRow);
+                System.out.println("======= You have successfully set up the hall =======");
+                break;
+            }
+            else {
+                System.out.println(msg);
+            }
+        }while (true);
+        return cols;
+    }
+    public static void menuOption(int rowHall, int colHall){
+        String[][] hall1 = new String[rowHall][colHall];
+        String[][] hall2 = new String[rowHall][colHall];
+        String[][] hall3 = new String[rowHall][colHall];
+
         boolean  checkOption = false;
         Scanner menu = new Scanner(System.in);
         int rows =  0;
@@ -83,7 +95,7 @@ public class Main {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(option);
             if(matcher.matches()){
-                Integer optionCase = Integer.valueOf(option);
+                int optionCase = Integer.parseInt(option);
                 if(optionCase<=0 || optionCase>6){
                     System.out.println("You can choose only Sixth...!");
                     checkOption = true;
@@ -92,15 +104,77 @@ public class Main {
                     switch (optionCase){
                         case 1 ->{
                             System.out.println("==================== Booking Hall ======================");
-//                            System.out.print("Enter your desired floor " + "(1" + (rowInHall > 1 ? "-" + totalSeatInRow : "" ) + "): " );
-//                            rows = menu.nextInt();
-//                            if(rowInHall < totalSeatInRow || totalSeatInRow <= 0 ){
-//                                System.out.println("--> Floor range start from " + "(1" + (rowInHall > 1 ? "-" + totalSeatInRow : "" ) + "): ");
-//                                checkOption = true;
-//                            }
+                            System.out.print("Enter your desired row " + "(1" + (rowHall > 1 ? "-" + colHall : "" ) + "): " );
+                            rows = menu.nextInt();
+                            if(rowHall < colHall || colHall <= 0 ){
+                                System.out.println("--> Floor range start from " + "(1" + (rowHall > 1 ? "-" + colHall : "" ) + "): ");
+                                checkOption = true;
+                            }
+                            else {
+                                System.out.print("Enter your desired seater " + "(1" + (rowHall > 1 ? "-" + colHall : "") + "): ");
+                                cols = menu.nextInt();
+                                if ( cols > colHall || cols <= 0 ) {
+                                    System.out.println("--> Room range start from " + "(1" + (rowHall > 1 ? "-" + colHall : "") + "): ");
+                                    checkOption = true;
+                                } else {
+                                    if( hall1[ rowHall - 1 ][ colHall - 1 ] == null ){
+                                        System.out.println("You have booked successfully");
+                                    }else{
+                                        System.out.println("You can not buy this condo, cause it already sold to someone!");
+                                    }
+                                }
+                            }
+                            checkOption = true;
                         }
                         case 2 -> {
-                            System.out.println("Hello");
+                            System.out.println("==================== ## Hall ## ======================");
+                            char seat = 65;
+                            System.out.print("-> Please Choose Hall : ");
+                            Scanner optionHall = new Scanner(System.in);
+                            int hall = optionHall.nextInt();
+                            if(hall <=0 || hall>3){
+                                System.out.println("You can choose only Sixth...!");
+                                checkOption = true;
+                            }
+                            switch (hall){
+                                case 1 -> {
+                                    System.out.println("==================== Hall A ============================");
+                                    for (int i = 0; i < hall1.length; i++) {
+                                        for (int j = 0; j < hall1[i].length; j++) {
+                                            if (hall1[i][j] == null)
+                                                System.out.print("|" + (char) (seat + i) + "-" + (j + 1) + "::AV|\t");
+                                            else
+                                                System.out.print("|" + (char) (seat + i) +  "-" + (j + 1) +"::" + hall1[i][j] + "|\t");
+                                        }
+                                        System.out.println();
+                                    }
+                                }
+                                case 2 -> {
+                                    System.out.println("==================== Hall B ============================");
+                                    for (int i = 0; i< hall2[i].length; i++){
+                                        for (int j = 0; j < hall2[i].length; j++) {
+                                            if (hall2[i][j] == null)
+                                                System.out.print("|" + (char) (seat + i) + "-" + (j + 1) + "::AV|\t");
+                                            else
+                                                System.out.print("|" + (char) (seat + i) +  "-" + (j + 1) +"::" + hall2[i][j] + "|\t");
+                                        }
+                                        System.out.println();
+                                    }
+                                }
+                                case 3 -> {
+                                    System.out.println("==================== Hall C ============================");
+                                    for (int i = 0; i< hall3[i].length; i++){
+                                        for (int j = 0; j < hall3[i].length; j++) {
+                                            if (hall3[i][j] == null)
+                                                System.out.print("|" + (char) (seat + i) + "-" + (j + 1) + "::AV|\t");
+                                            else
+                                                System.out.print("|" + (char) (seat + i) +  "-" + (j + 1) +"::" + hall3[i][j] + "|\t");
+                                        }
+                                        System.out.println();
+                                    }
+                                }
+                            }
+                            checkOption = true;
                         }
                         case 3 -> {
                             dailyShowtime();
@@ -118,12 +192,5 @@ public class Main {
         }while(checkOption);
 
     }
-    public static void main(String[] args) {
-        Title.displayTitle();
-        configHall();
-        menuOption();
-    }
-
-
 
 }
